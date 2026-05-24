@@ -1,61 +1,91 @@
-console.log("Article:", Article);
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-const Article = require("./models/Article");
-
 const app = express();
 
+// ================= MIDDLEWARE =================
 app.use(cors());
 app.use(express.json());
 
-// Connect DB
-mongoose.connect("mongodb://localhost:27017/echo")
+// ================= MONGODB CONNECT =================
+mongoose.connect("mongodb+srv://devmajumdar05_db_user:dev122112@cluster0.0lxvpz9.mongodb.net/echo?retryWrites=true&w=majority")
   .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log(err));
+  .catch((err) => console.log("MongoDB Error:", err));
 
-// TEST route
-app.get("/", (req, res) => {
-  res.send("Server is running 🚀");
+// ================= SCHEMA =================
+const articleSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  category: String,
+  author: String,
+  excerpt: String,
+  content: String,
+  image: String,
+  date: String
 });
 
+const Article = mongoose.model("Article", articleSchema);
+
+// ================= ROUTES =================
+
+// Home
+app.get("/", (req, res) => {
+  res.send("🚀 Server is running");
+});
+
+// Test
 app.get("/test", (req, res) => {
-  res.send("TEST OK");
+  res.json({ message: "TEST OK" });
 });
 
 // GET all articles
 app.get("/articles", async (req, res) => {
-  // Fetch all articles from the datanode base
-  const articles = await Article.find();
-  // Send the articles back to the client
-  res.json(articles);
+  try {
+    const articles = await Article.find().sort({ _id: -1 });
+    res.json(articles);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// CREATE
+// CREATE article
 app.post("/articles", async (req, res) => {
-  const newArticle = new Article(req.body);
-  await newArticle.save();
-  res.json(newArticle);
-});
-
-// DELETE
-app.delete("/articles/:id", async (req, res) => {
-  await Article.findByIdAndDelete(req.params.id);
-  res.json({ message: "Deleted" });
+  try {
+    const newArticle = new Article(req.body);
+    const saved = await newArticle.save();
+    res.json(saved);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // UPDATE article
 app.put("/articles/:id", async (req, res) => {
-  const updated = await Article.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
-  res.json(updated);
+  try {
+    const updated = await Article.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// START SERVER
-app.listen(5000, () => {
-  console.log("Server running on http://localhost:5000");
+// DELETE article
+app.delete("/articles/:id", async (req, res) => {
+  try {
+    await Article.findByIdAndDelete(req.params.id);
+    res.json({ message: "Deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ================= START SERVER =================
+const PORT = 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });

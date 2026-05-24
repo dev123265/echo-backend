@@ -1,0 +1,12 @@
+POST http://localhost:5000/articles
+Content-Type: application/json
+
+{
+  "title": "My First Article",
+  "category": "Tech",
+  "author": "Dev",
+  "excerpt": "Testing backend from VS Code",
+  "content": "Hello world from REST Client",
+  "image": "",
+  "date": "2026-01-01"
+}
