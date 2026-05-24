@@ -1,0 +1,17 @@
+{
+  "name": "echo-backend",
+  "version": "1.0.0",
+  "description": "ECHO full-stack article platform backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["node", "express", "mongodb", "api"],
+  "author": "Dev",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mongoose": "^9.6.2"
+  }
+}
